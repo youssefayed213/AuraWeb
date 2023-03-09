@@ -1,0 +1,292 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Post index{% endblock %}
+
+
+
+
+
+{% block body %}
+    {#<h1>Post index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Theme</th>
+                <th>Image</th>
+                <th>Contenu</th>
+                <th>Nbr_Vue</th>
+                <th>Date_Creation</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>#}
+        {#% for post in posts %}
+            <tr>
+                <td>{{ post.id }}</td>
+                <td>{{ post.theme }}</td>
+                <td>{{ post.image }}</td>
+                <td>{{ post.contenu }}</td>
+                <td>{{ post.nbrVue }}</td>
+                <td>{{ post.dateCreation ? post.dateCreation|date('Y-m-d') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_post_show', {'id': post.id}) }}">show</a>
+                    <a href="{{ path('app_post_edit', {'id': post.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %
+        </tbody>
+    </table>#}
+     <!-- Hero Section Begin -->
+    
+    
+                        <div class="hero__search__form">
+    <form id="search-form">
+     
+         <input type="text" id="search-input" placeholder="Name of the post" >
+        <input type="date" id="search-date" placeholder="Date of the post" >
+      
+                            </form>
+       
+    <div id="search-results"></div>
+                        
+
+<script>
+  $(document).ready(function() {
+    // Ecouter l'événement de frappe sur le champ de recherche et le changement de date
+    $('#search-input, #search-date').on('keyup change', function() {
+        // Récupérer la valeur du champ de recherche
+        var query = $('#search-input').val();
+
+        // Récupérer la valeur du champ de date
+        var date = $('#search-date').val();
+
+        // Vérifier si les deux champs sont vides
+        if (!query && !date) {
+            $('#search-results').html('<p>Please provide a search criteria.</p>');
+            return;
+        }
+
+        // Effectuer la recherche AJAX
+        $.ajax({
+            type: 'GET',
+            url: '/post/searc',
+            data: {q: query, date: date},
+            success: function(data) {
+                var resultsDiv = $('#search-results');
+                resultsDiv.empty();
+                if (data.length === 0) {
+                    resultsDiv.append('<p>No results found.</p>');
+                } else {
+                    for (var i = 0; i < data.length; i++) {
+                        var result = data[i];
+                        resultsDiv.append('<a href="' + result.url + '">' + result.nom + '</a>');
+                    }
+                }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });
+
+  
+});
+
+</script>
+
+ 
+           
+   </div>
+    <style>
+    
+    .b{
+     color:#b2b2b2;
+    }
+    .hero__search__form {
+      display: flex;
+    flex-wrap: nowrap; /* changed from "wrap" to "nowrap" */
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+    }
+    
+
+    .hero__search__form input[type="text"],
+    .hero__search__form input[type="date"] {
+       width: 300px;
+	padding: 10px;
+	margin-right: 10px;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+	font-size: 16px;
+    }
+   
+    #search-results {
+       margin-top: 50px;
+	display: flex;
+	flex-direction: column;
+    }
+
+    #search-results a {
+     padding: 10px;
+margin-bottom: 10px;
+background-color: #f5f5f5;
+color: #333;
+text-decoration: none;
+border-radius: 5px;
+transition: background-color 0.3s ease;
+box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.2);
+    }
+
+    #search-results a:hover {
+    background-color: #eee;
+box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
+    }
+</style>
+                   
+   </div>
+   
+    <!-- Hero Section End -->
+
+    <!-- Breadcrumb Section Begin -->
+    <img class="breadcrumb-section set-bg" src="{{asset ('front/img/breadcrumb.jpg') }}">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        <h2>Blog</h2>
+                        <div class="breadcrumb__option">
+                            <a href="./index.html">Home</a>
+                            <span>Blog</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
+
+    <!-- Blog Section Begin -->
+    <section class="blog spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-5">
+                    <div class="blog__sidebar">
+                    {#
+                        <div class="blog__sidebar__search">
+                            <form action="#">
+                                <input type="text" placeholder="Search...">
+                                <button type="submit"><span class="icon_search"></span></button>
+                            </form>
+                        </div>#}
+                        <div class="blog__sidebar__item">
+                            <h4>Categories</h4>
+                            <ul>
+                                <li><a href="#">Objectifs Générales</a></li>
+                                <li><a href="#">Changement climatique</a></li>
+                                <li><a href="#">Énergie renouvelable</a></li>
+                                <li><a href="#">Agriculture durable</a></li>
+                                <li><a href="#">Éducation à l'environnement</a></li>
+                                <li><a href="#">Alimentation saine</a></li>
+                                
+                            </ul>
+                        </div>
+                        <div class="blog__sidebar__item">
+                            <h4>Recent News</h4>
+                            <div class="blog__sidebar__recent">
+                              {% for recent in recents %}
+                              <div class="blog__item__t">  
+                               <a href="{{ path('app_post_singlepage', { 'id': recent.id }) }}" >
+                                    <div class="blog__sidebar__recent__item__pic">
+                                         <img src=" {{asset(recent.image)}} " alt="">
+                                    </div>
+                               
+                                        <h6 ><strong>{{ recent.nom }}</strong></h6>
+                                          
+                                      <a class="b">    <span class="fa fa-calendar-o"> {{ recent.dateCreation ? recent.dateCreation|date('Y-m-d') : '' }}</span></a>
+                                    </div>
+                                </a>
+                         
+                               {% endfor %}
+
+                            </div>
+
+                        </div>
+                    
+                          
+                      
+                    </div>
+                </div>
+                <div class="col-lg-8 col-md-7">
+                    <div class="row">
+                        {% for post in posts %}
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="blog__item">
+                                <div class="blog__item__pic">
+                                   <a href="{{ path('app_post_singlepage', {'id': post.id}) }}"> <img src="{{asset(post.image)}}" alt=""></a>
+                                </div>
+                                <div class="blog__item__text">
+                                    <ul>
+                                        <li><i class="fa fa-calendar-o"></i> {{ post.dateCreation ? post.dateCreation|date('Y-m-d') : '' }}</li>
+                                        <li><i class="fa fa-comment-o"></i> 
+                                        {% set commentCount = 0 %}
+                                        {% for comment in post.commentaires %}
+                                        {% set commentCount = commentCount + 1 %}
+                                        {% endfor %}
+
+                                        {{ commentCount }} 
+                                        </li>
+                                    </ul>
+                                    <h5><a href="{{ path('app_post_singlepage', {'id': post.id}) }}">{{ post.nom }}</a></h5>
+                                    <p>Theme : {{ post.theme}}
+                                    
+                                     </p>
+                                    <a href="{{ path('app_post_singlepage', {'id': post.id}) }}" class="blog__btn">READ MORE <span class="arrow_right"></span></a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %} 
+                        
+                        
+                        <div class="col-lg-12">
+                            <div class="product__pagination blog__pagination">
+                                {{ knp_pagination_render(posts)}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Blog Section End -->
+{% endblock %}
+
+
+    
+     {#{% for post in posts %}
+                    <div class="col-lg-8 col-md-7">
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="blog__item">
+                                <div class="blog__item__pic">
+                                    <img src="{{asset(post.image)}}" alt="">
+                                </div>
+                                <div class="blog__item__text">
+                                    <ul>
+                                        <li><i class="fa fa-calendar-o"></i> {{ post.dateCreation ? post.dateCreation|date('Y-m-d') : '' }}</li>
+                                        <li><i class="fa fa-comment-o"></i> {{ post.nbrVue }}</li>
+                                    </ul>
+                                    <h5><a href="#">{{ post.nom }}</a></h5>
+                                    <p>{{post.theme}} </p>
+                                    <a href="#" class="blog__btn">READ MORE <span class="arrow_right"></span></a>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                        </div>
+                        {% endfor %} #}                   

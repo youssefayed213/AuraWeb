@@ -1,0 +1,49 @@
+{% extends 'base1.html.twig' %}
+
+{% block title %}Donation
+{% endblock %}
+
+{% block body %}
+	<h1>
+		<center>Donations</h1>
+		<a class="btn btn-primary mt-4 mb-2" href="{{ path('app_don_stats') }}">Top Associations / Donation</a>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Id</th>
+					<th>Membre</th>
+					<th>Association</th>
+					<th>Montant</th>
+					<th>Date</th>
+					<th>Carte Credit</th>
+					<th>Email</th>
+					<th>Message</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for don in dons %}
+					<tr>
+						<td>{{ don.id }}</td>
+						<td>{{ don.membre.nom }}</td>
+						<td>{{ don.association.nom }}</td>
+						<td>{{ don.montant }}</td>
+						<td>{{ don.dateDon ? don.dateDon|date('Y-m-d') : '' }}</td>
+						<td>{{ don.cartecredit }}</td>
+						<td>{{ don.Email }}</td>
+						<td>{{ don.message }}</td>
+						<td>
+							<a href="{{ path('app_don_show', {'id': don.id}) }}">Show</a>
+							<a href="{{ path('app_don_edit', {'id': don.id}) }}">Edit</a>
+							{{include('don/_delete_form.html.twig')}}
+						</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="4">no records found</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+	{% endblock %}

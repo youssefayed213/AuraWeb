@@ -1,0 +1,46 @@
+{% extends 'base1.html.twig' %}
+
+{% block title %}Techniciens Listes{% endblock %}
+
+{% block body %}
+<link rel="stylesheet" href="{{asset('back/css/styleTech.css')}}" type="text/css"> 
+    <h1>Techniciens Listes</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID Technicien</th>
+                <th>Nom</th>
+                <th>Prenom</th>
+                <th>Telephone</th>
+                <th>Email</th>
+                <th>Specialite</th>
+                <th>Salaire</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        <a href="{{ path('app_technicien_new') }}"class="editlink">Create</a>
+        {% for technicien in techniciens %}
+            <tr>
+                <td>{{ technicien.id }}</td>
+                <td>{{ technicien.nom }}</td>
+                <td>{{ technicien.prenom }}</td>
+                <td>{{ technicien.tel }}</td>
+                <td>{{ technicien.email }}</td>
+                <td>{{ technicien.specialite }}</td>
+                <td>{{ technicien.salaire }}</td>
+                <td>
+                    <a href="{{ path('app_technicien_show', {'id': technicien.id}) }}"class="editlink">Show</a>
+                    <a href="{{ path('app_technicien_edit', {'id': technicien.id}) }}"class="editlink">Edit</a>
+                    {{ include('technicien/_delete_form.html.twig') }}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
