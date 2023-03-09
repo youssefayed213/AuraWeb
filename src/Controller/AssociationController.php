@@ -25,7 +25,7 @@ class AssociationController extends AbstractController
         $associations=$paginator->paginate(
             $associations, /* query NOT result */
             $request->query->getInt('page', 1),
-            2
+            3
         );
         $association =$associationRepository->findAll();
         $association=$paginator->paginate(

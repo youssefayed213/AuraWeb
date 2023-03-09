@@ -15,6 +15,9 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
+use App\Service\PdfService;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 #[Route('/facture')]
 class FactureController extends AbstractController
 {
@@ -137,6 +140,33 @@ class FactureController extends AbstractController
             'facture' => $facture,
             'form' => $form,
         ]);
+    }
+    #[Route('/{id}/pdf', name: 'app_facture_pdf', methods: ['GET', 'POST'])]
+    public function pdf(Request $request, Facture $facture): Response
+    {
+        $options = new Options();
+        $options->set('defaultFont', 'Helvetica');
+
+        // create PDF instance
+        $dompdf = new Dompdf($options);
+
+        // generate PDF content
+        $html = $this->renderView('facture/pdf.html.twig', [
+            'facture' => $facture
+        ]);
+
+        // load HTML into PDF
+        $dompdf->loadHtml($html);
+
+        // render PDF
+        $dompdf->render();
+
+        // output PDF to the browser
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->setContent($dompdf->output());
+        return $response;
+        return $this->redirectToRoute('app_facture_afficher', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}', name: 'app_facture_delete', methods: ['POST'])]

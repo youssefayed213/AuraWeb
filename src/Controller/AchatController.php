@@ -16,7 +16,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Dompdf\Dompdf;
+use Dompdf\Options;
 #[Route('/achat')] /*5545454555*/ 
 class AchatController extends AbstractController
 {
@@ -37,12 +38,35 @@ class AchatController extends AbstractController
     }
     #[Route('/pdf/{id}', name: 'app_achat_pdf', methods: ['GET', 'POST'])]
     public function generatePdfPersonne(AchatRepository $achatRepository, PdfService $pdf,Facture $facture) {
-        $html = $this->render('achat/pdf.html.twig', [
+        $options = new Options();
+        $options->set('defaultFont', 'Helvetica');
+
+        // create PDF instance
+        $dompdf = new Dompdf($options);
+
+        // generate PDF content
+        $html = $this->renderView('achat/pdf.html.twig', [
+            'achats' => $achatRepository->getAchatsPourfacture($facture->getId()),
+            'facture' => $facture
+        ]);
+
+        // load HTML into PDF
+        $dompdf->loadHtml($html);
+
+        // render PDF
+        $dompdf->render();
+
+        // output PDF to the browser
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->setContent($dompdf->output());
+        return $response;
+        /* $html = $this->render('achat/pdf.html.twig', [
             'achats' => $achatRepository->getAchatsPourfacture($facture->getId()),
             
         ]);
         $pdf->showPdfFile($html);
-        return $this->redirectToRoute('app_facture_afficher', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_facture_afficher', [], Response::HTTP_SEE_OTHER); */
     }
     #[Route('/ajouter', name: 'app_achat_ajouter', methods: ['GET', 'POST'])]
     public function ajouter(Request $request, AchatRepository $achatRepository, FactureRepository $factureRepository,MembreRepository $membreRepository,ProduitRepository $produitRepository): Response

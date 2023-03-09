@@ -1,6 +1,8 @@
-<head>
+<!DOCTYPE html>
+<html>
+	<head>
 		<meta charset="UTF-8">
-		<title>Facture</title>
+		<title>Donation Receipt</title>
 		<style>
 			body {
 				font-family: Arial, sans-serif;
@@ -67,38 +69,40 @@
 			}
 		</style>
 	</head>
-    <div class="receipt-body">
+	<body>
+		<div
+			class="container">
+			{#<div class="receipt-header">
+						<img src="/var/www/html/public/images/logox.png" alt="My Logo">
+						<h1>Donation Receipt</h1>
+						</div>#}
+			{# <div class="receipt-body">
 				<p>Hey
-					<span class="bold">{{ facture.membre.nom }}!</span>
-					vos achats sont de valeur
-					<span class="bold">{{ facture.montant }}€</span>
-					
-				<p>l'achat est fait le
-					<span class="bold">{{ facture.date ? facture.date|date('Y-m-d') : ''  }}</span>. The donation receipt ID is
-					<span class="bold">{{ facture.id }}</span>.</p>
-			</div>
- <table class="table" border=2>
-        <thead>
+					<span class="bold">{{ don.membre.nom }}!</span>
+					Thank you for your generous donation of
+					<span class="bold">{{ don.montant }}€</span>
+					to our association
+					<span class="bold">{{ don.association.nom }}</span>.</p>
+				<p>Your donation was received on
+					<span class="bold">{{ don.dateDon|date('F j, Y') }}</span>. The donation receipt ID is
+					<span class="bold">{{ don.id }}</span>.</p>
+			</div> #}
+			<table class="table">
+        <tbody>
             <tr>
                 <th>Id</th>
-                <th>Nbr_Piece</th>
-                <th>Produit</th>
-                <th>Prix</th>
-                
+                <td>{{ facture.id }}</td>
             </tr>
-        </thead>
-        <tbody>
-        {% for achat in achats %}
             <tr>
-                <td>{{ achat.id }}</td>
-                <td>{{ achat.nbrPiece }}</td>
-                <td>{{ achat.produit }}</td>
-                <td>{{ achat.prix }}</td>
+                <th>Montant</th>
+                <td>{{ facture.montant }}</td>
             </tr>
-        {% else %}
             <tr>
-                <td colspan="4">no records found</td>
+                <th>Date</th>
+                <td>{{ facture.date ? facture.date|date('Y-m-d') : '' }}</td>
             </tr>
-        {% endfor %}
         </tbody>
     </table>
+		</div>
+	</body>
+</html>
