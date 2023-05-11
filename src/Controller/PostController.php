@@ -28,6 +28,71 @@ use Knp\Component\Pager\PaginatorInterface;
 #[Route('/post')]
 class PostController extends AbstractController
 {
+    #[Route('/addJson', name: 'app_post_addJSON', methods: ['GET','POST'])]
+    public function addPosts(Request $request,EntityManagerInterface $em): Response
+    {
+        $Post = new Post();
+        $theme = $request->query->get("theme");
+        $contenu=$request->query->get("contenu");
+        $nom=$request->query->get("nom");
+        $image=$request->query->get("image");
+        $date = new \DateTime('now');
+
+        $Post->setImage($image);
+        $Post->setTheme($theme);
+        $Post->setNom($nom);
+        $Post->setContenu($contenu);
+        $Post->setDateCreation($date);
+
+
+        $em->persist($Post);
+        $em->flush();
+
+        return $this->json($Post,200,[],['groups'=>'posts']);
+    }
+    #[Route("/deletePost/{id}")]
+    public function deletePost(Request $req ,$id,NormalizerInterface $normalizer,PostRepository $postRepository)
+    {
+        $post =$postRepository->find($id);
+        $postRepository->remove($post,true);
+        $jsonContent =$normalizer->normalize($post, 'json',['groups'=>'posts'] );
+        return new Response("Post deleted successsfully" . json_encode($jsonContent));
+    }
+ #[Route("/updatePost/{id}")]
+    public function updatePost(Request $request ,$id,SerializerInterface $seriaizer,PostRepository $postRepository)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $Post = $this->getDoctrine()->getManager()
+            ->getRepository(Post::class)
+            ->find($request->get("id"));
+
+            $theme = $request->query->get("theme");
+            $contenu=$request->query->get("contenu");
+            $nom=$request->query->get("nom");
+            $image=$request->query->get("image");
+            $date = new \DateTime('now');
+    
+            $Post->setImage($image);
+            $Post->setTheme($theme);
+            $Post->setNom($nom);
+            $Post->setContenu($contenu);
+            $Post->setDateCreation($date);
+    
+    
+    
+        $em->persist($Post);
+        $em->flush();
+       /* $serializer = new Serializer([new ObjectNormalizer()]);
+        $formatted = $serializer->normalize("Post a ete modifiee avec success.");*/
+         return $this->json($Post,200,[],['groups'=>'posts']);
+    }
+    #[Route('/allpostjson', name: 'app_post_liste',methods:['GET','POST'])]
+    public function getPosts(PostRepository $postRepository, SerializerInterface $serializer): JsonResponse
+{
+    $posts = $postRepository->findAll();
+    return $this->json($posts, 200, [], ['groups' => 'posts']);
+}
+
 
     
     #[Route('/', name: 'app_post_index', methods: ['GET'])]
@@ -268,14 +333,7 @@ class PostController extends AbstractController
             'posts' => $PostRepository->findAll(),
         ]);
     }
-    #[Route('/jsoooooon', name: 'app_post_liste',methods:['GET','POST'])]
-    public function getPosts(PostRepository $postRepository, SerializerInterface $serializer): JsonResponse
-{
-    $posts = $postRepository->findAll();
-    $json = $serializer->serialize($posts,'json',['groups' => 'posts']);
-    
-    return $this->json($json,200,[],['groups'=>'posts']);
-}
+  
    /* #[Route('/addJson', name: 'app_post_addJSON', methods: ['GET','POST'])]
     public function addPosts(Request $request, SerializerInterface $serializer, EntityManagerInterface $em): Response
     {
@@ -286,54 +344,9 @@ class PostController extends AbstractController
         return new Response("Post added successfully");
     
     }*/
-    #[Route('/addJson', name: 'app_post_addJSON', methods: ['GET','POST'])]
-    public function addPosts(Request $request,EntityManagerInterface $em): Response
-    {
-        $Post = new Post();
-        $theme = $request->query->get("theme");
-        $contenu=$request->query->get("contenu");
-        $nom=$request->query->get("nom");
-        $image=$request->query->get("image");
-        $date = new \DateTime('now');
+    
 
-        $Post->setImage($image);
-        $Post->setTheme($theme);
-        $Post->setNom($nom);
-        $Post->setContenu($contenu);
-        $Post->setDateCreation($date);
-
-
-        $em->persist($Post);
-        $em->flush();
-
-        return $this->json($Post,200,[],['groups'=>'posts']);
-    }
-
-    #[Route("/deletePost/{id}")]
-        public function deleteEvent(Request $req ,$id,NormalizerInterface $normalizer,PostRepository $postRepository)
-        {
-            $post =$postRepository->find($id);
-            $postRepository->remove($post,true);
-            $jsonContent =$normalizer->normalize($post, 'json',['groups'=>'posts'] );
-            return new Response("Post deleted successsfully" . json_encode($jsonContent));
-        }
-
-        #[Route("/updatePost/{id}")]
-        public function updateEvent(Request $req ,$id,NormalizerInterface $normalizer,PostRepository $postRepository)
-        {
-            $post = $postRepository->find($id);
-            //$event->setImage($req->get('image'));
-            $post->setNom($req->get('nom'));
-            $post->setTheme($req->get('theme'));
-            $post->setContenu($req->get('contenu'));
-            $post->setImage($req->get('image'));
-            $date = new \DateTime('now');
-            $post->setDateCreation($date);
-        
-            $postRepository->save($post,true);
-            $jsonContent =$normalizer->normalize($post, 'json', ['groups' => 'posts']);
-            return new Response("Post updated successsfully" . json_encode($jsonContent));
-        }
+    
 
 
    /* #[Route('/UpdateJson', name: 'app_post_addJSON', methods: ['GET','POST'])]
