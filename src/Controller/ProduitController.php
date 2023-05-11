@@ -102,11 +102,10 @@ class ProduitController extends AbstractController
         
     }
     #[Route('/list', name: 'app_produit_list', methods: ['GET'])]
-    public function list(ProduitRepository $repo,SerializerInterface $serializerInterface)
+    public function list(ProduitRepository $repo,SerializerInterface $serializerInterface):JsonResponse
     {$produits=$repo->findAll();
-        $json=$serializerInterface->serialize($produits,'json',['groups'=>'produit']);
-        dump($json);
-       die; 
+        //$json=$serializerInterface->serialize($produits,'json',['groups'=>'produit']);
+         return $this->json($produits,200,[],['groups'=>'produit']);
         
     }
     /* #[Route('/addp', name: 'app_produit_add')]
