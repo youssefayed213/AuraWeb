@@ -11,13 +11,89 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 #[Route('/membre')]
 class MembreController extends AbstractController
 {
+    #[Route('/signupjson', name: 'signupMembreAction',methods:['GET','POST'])]
+    public function signupAction(Request $request)
+    {
+        $CIN = $request->query->get("CIN");
+        $nom = $request->query->get("UserName");
+        $prenom = $request->query->get("UserPrenom");
+        $Email = $request->query->get("Email");
+        $Adresse = $request->query->get("Adresse");
+        $Password = $request->query->get("Password");
+      
+
+        if(!filter_var($Email, FILTER_VALIDATE_EMAIL)){
+            return new Response("email invalid.");
+        }
+        $user = new Membre();
+        
+        $user->setNom($nom);
+        $user->setPrenom($prenom);
+        $user->setEmail($Email);
+        $user->setAdresse($Adresse);
+        $user->setPassword($Password);
+        //$user->setIsVerified(true);
+        
+
+        try {
+            $em = $this->getDoctrine()->getManager();
+            $em ->persist($user);
+            $em -> flush();
+
+            return new JsonResponse("Account is cretaed", 200);
+        }catch(\Exception $ex) {
+            return new Response("exception".$ex->getMessage());
+        }
+    }
+
+
+
+    #[Route('/signinjson', name: 'signinMembreAction',methods:['GET','POST'])]
+    public function siginAction(Request $request,MembreRepository $membreRepository) 
+    {
+        $Email = $request->query->get("Email");
+        $Password = $request->query->get("Password");
+
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository(Membre::class)->findOneBy(['email'=>$Email]);
+        $membre = $membreRepository->verif($Email,$Password);
+        if($membre!=null){
+            /* $serializer = new Serializer([new ObjectNormalizer()]);
+            $formatted = $serializer->normalize($membre);
+            return new JsonResponse($formatted); */
+            return $this->json($membre, 200, [], ['groups' => 'posts']);
+        }
+        else{
+            return new Response("failed");
+        }
+        /* if($user) {
+            if($Password == $user->getPassword()) {
+                $serializer = new Serializer([new ObjectNormalizer()]);
+                $formatted = $serializer->normalize($user);
+                return new JsonResponse($formatted);
+            }
+            else {
+                return new Response("failed");
+            }
+        }
+        else 
+        {
+            return new Response("failed");
+        } */
+    }
+
     #[Route('/', name: 'app_membre_index', methods: ['GET'])]
     public function index(Request $request,MembreRepository $membreRepository): Response
     {   $session= $request->getSession();
